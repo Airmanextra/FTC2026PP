@@ -21,8 +21,24 @@ android {
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
+    
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
+            all {
+                useJUnitPlatform()
+            }
+        }
+    }
 }
 
 dependencies {
     implementation project(':FtcRobotController')
+    
+    // Testing dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testImplementation 'net.jqwik:jqwik:1.7.4'
+    testImplementation 'org.mockito:mockito-core:5.3.1'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
 }
