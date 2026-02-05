@@ -13,11 +13,11 @@ This implementation plan breaks down the turret subsystem into discrete coding t
   - Implement servo retrieval from Hardware_Map with error handling
   - _Requirements: 1.1, 1.2, 1.3_
 
-- [-] 1.1 Write property test for servo initialization
+- [x] 1.1 Write property test for servo initialization
   - **Property 1: Servo Initialization**
   - **Validates: Requirements 1.1, 1.2**
 
-- [~] 1.2 Write property test for missing servo error handling
+- [-] 1.2 Write property test for missing servo error handling
   - **Property 7: Missing Servo Error Handling**
   - **Validates: Requirements 1.3**
 
