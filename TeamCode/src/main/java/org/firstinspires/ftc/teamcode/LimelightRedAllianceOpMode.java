@@ -1,0 +1,76 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import org.firstinspires.ftc.teamcode.subsystems.TurretTargeting;
+
+/**
+ * TeleOp mode for Red Alliance with Limelight AprilTag targeting.
+ * 
+ * Controls:
+ * - Left Stick X: Manual turret control
+ * - A Button: Auto-aim at red alliance basket
+ * 
+ * DECODE 2025-26 Season
+ * Red Alliance Basket Tags: 11, 12, 13
+ */
+@TeleOp(name = "Limelight Red Alliance", group = "Competition")
+public class LimelightRedAllianceOpMode extends LinearOpMode {
+    
+    private TurretTargeting targeting;
+    
+    @Override
+    public void runOpMode() {
+        // Initialize the turret targeting system
+        targeting = new TurretTargeting(hardwareMap);
+        
+        telemetry.addData("Status", "Initialized - Red Alliance");
+        telemetry.addData("Controls", "Left Stick X = Manual Turret");
+        telemetry.addData("", "A Button = Auto-Aim Red Basket");
+        telemetry.update();
+        
+        waitForStart();
+        
+        while (opModeIsActive()) {
+            // Update vision system
+            targeting.update();
+            
+            // Check for auto-aim button
+            if (gamepad1.a) {
+                // Auto-aim at red basket
+                boolean onTarget = targeting.aimAtRedBasket();
+                
+                telemetry.addData("Mode", "AUTO-AIM RED BASKET");
+                telemetry.addData("On Target", onTarget ? "YES" : "NO");
+                
+                if (targeting.getVision().hasRedBasketTarget()) {
+                    telemetry.addData("Target X", "%.2f°", targeting.getVision().getRedBasketX());
+                } else {
+                    telemetry.addData("Target", "NOT FOUND");
+                }
+            } else {
+                // Manual control with left stick
+                double manualPower = -gamepad1.left_stick_x;
+                targeting.getTurret().setPower(manualPower);
+                
+                telemetry.addData("Mode", "MANUAL");
+                telemetry.addData("Turret Power", "%.2f", manualPower);
+            }
+            
+            // Display vision info
+            telemetry.addData("", "--- Vision Status ---");
+            telemetry.addData("Red Basket Visible", targeting.getVision().hasRedBasketTarget());
+            telemetry.addData("AprilTags Detected", targeting.getVision().getAprilTags().size());
+            
+            // Display turret info
+            telemetry.addData("", "--- Turret Status ---");
+            telemetry.addData("Current Power", "%.2f", targeting.getTurret().getCurrentPower());
+            telemetry.addData("Direction", targeting.getTurret().getDirection());
+            
+            telemetry.update();
+        }
+        
+        // Stop everything when OpMode ends
+        targeting.stop();
+    }
+}
