@@ -175,8 +175,8 @@ double rpm = kinematics.velocityToRpm(velocity, 0.1);
 ### Hardware Config (Driver Station)
 ```
 Limelight 3A → "limelight"
-CRServo → "turretLeft"
-CRServo → "turretRight"
+CRServo → "turretRotOne"
+CRServo → "turretRotTwo"
 DcMotorEx → "shooterMotor"
 ```
 

@@ -20,8 +20,8 @@ public class Turret {
     private double currentPower;
     
     // Default hardware names
-    private static final String DEFAULT_LEFT_SERVO_NAME = "turretLeft";
-    private static final String DEFAULT_RIGHT_SERVO_NAME = "turretRight";
+    private static final String DEFAULT_LEFT_SERVO_NAME = "turretRotOne";
+    private static final String DEFAULT_RIGHT_SERVO_NAME = "turretRotTwo";
     
     /**
      * Constructs a Turret with default servo names.

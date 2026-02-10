@@ -32,8 +32,8 @@ The design is stateless except for tracking the last commanded power value, maki
 private CRServo leftServo;
 private CRServo rightServo;
 private double currentPower;
-private static final String DEFAULT_LEFT_SERVO_NAME = "turretLeft";
-private static final String DEFAULT_RIGHT_SERVO_NAME = "turretRight";
+private static final String DEFAULT_LEFT_SERVO_NAME = "turretRotOne";
+private static final String DEFAULT_RIGHT_SERVO_NAME = "turretRotTwo";
 ```
 
 **Constructor**:
@@ -94,7 +94,7 @@ The constructor initializes the servos from the hardware map. The overloaded ver
 
 ### Hardware Names
 - Type: `String`
-- Default values: "turretLeft", "turretRight"
+- Default values: "turretRotOne", "turretRotTwo"
 - Configurable via constructor overload
 
 

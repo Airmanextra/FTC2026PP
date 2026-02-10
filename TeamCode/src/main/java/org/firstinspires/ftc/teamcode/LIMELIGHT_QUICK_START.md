@@ -6,8 +6,8 @@
 ```
 Configure Robot → Add Device:
 - Limelight 3A → Name: "limelight"
-- CRServo → Name: "turretLeft"
-- CRServo → Name: "turretRight"
+- CRServo → Name: "turretRotOne"
+- CRServo → Name: "turretRotTwo"
 ```
 
 ### 2. Test Limelight Detection

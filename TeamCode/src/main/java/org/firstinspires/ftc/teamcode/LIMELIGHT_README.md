@@ -96,8 +96,8 @@ Diagnostic OpMode for testing Limelight detection.
    - Connected via USB to Robot Controller
 
 2. **Turret Servos** (if using TurretTargeting)
-   - Left servo: `"turretLeft"` (default)
-   - Right servo: `"turretRight"` (default)
+   - Left servo: `"turretRotOne"` (default)
+   - Right servo: `"turretRotTwo"` (default)
 
 ### Configuration Steps
 
@@ -108,7 +108,7 @@ Diagnostic OpMode for testing Limelight detection.
 
 2. **Configure Turret Servos (if applicable):**
    - Add two Continuous Rotation Servos
-   - Name them `"turretLeft"` and `"turretRight"`
+   - Name them `"turretRotOne"` and `"turretRotTwo"`
 
 3. **Limelight Pipeline Setup:**
    - Pipeline 0 should be configured for AprilTag detection
