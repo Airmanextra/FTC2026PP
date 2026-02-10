@@ -79,7 +79,7 @@ public class LimelightVision {
     }
     
     /**
-     * Gets the horizontal offset (tx) to the target in degrees.
+     * Gets the horizontal offset to the target in degrees.
      * Positive values mean the target is to the right.
      * 
      * @return Horizontal offset in degrees, or 0 if no target
@@ -90,7 +90,7 @@ public class LimelightVision {
     }
     
     /**
-     * Gets the vertical offset (ty) to the target in degrees.
+     * Gets the vertical offset to the target in degrees.
      * Positive values mean the target is above the crosshair.
      * 
      * @return Vertical offset in degrees, or 0 if no target
@@ -189,7 +189,7 @@ public class LimelightVision {
      */
     public double getRedBasketX() {
         LLResultTypes.FiducialResult tag = getClosestRedBasket();
-        return tag != null ? tag.getTx() : 0.0;
+        return tag != null ? tag.getTargetXDegrees() : 0.0;
     }
     
     /**
@@ -199,9 +199,9 @@ public class LimelightVision {
      */
     public double getBlueBasketX() {
         LLResultTypes.FiducialResult tag = getClosestBlueBasket();
-        return tag != null ? tag.getTx() : 0.0;
+        return tag != null ? tag.getTargetXDegrees() : 0.0;
     }
-    
+
     /**
      * Gets the robot's pose from AprilTag localization.
      * 
