@@ -21,8 +21,8 @@ public class LimelightVision {
     private LLResult latestResult;
     
     // DECODE 2025-26 AprilTag IDs
-    public static final int[] RED_BASKET_TAGS = {11, 12, 13};
-    public static final int[] BLUE_BASKET_TAGS = {14, 15, 16};
+    public static final int[] RED_BASKET_TAGS = {24};
+    public static final int[] BLUE_BASKET_TAGS = {20};
     
     // Default hardware name
     private static final String DEFAULT_LIMELIGHT_NAME = "limelight";

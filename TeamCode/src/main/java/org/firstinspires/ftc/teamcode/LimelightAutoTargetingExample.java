@@ -17,13 +17,12 @@ import org.firstinspires.ftc.teamcode.subsystems.TurretTargeting;
  * DECODE 2025-26 Season
  */
 @Autonomous(name = "Limelight Auto Targeting Example", group = "Examples")
-@Disabled  // Remove this line when ready to use
 public class LimelightAutoTargetingExample extends LinearOpMode {
     
     private TurretTargeting targeting;
     
     // Alliance selection - change this based on your alliance
-    private static final boolean IS_RED_ALLIANCE = true;
+    private static final boolean IS_RED_ALLIANCE = false;
     
     @Override
     public void runOpMode() {
