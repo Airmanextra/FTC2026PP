@@ -71,7 +71,7 @@ public class LimelightTestOpMode extends LinearOpMode {
                     telemetry.addData(String.format("Tag %d (%s)", 
                         tag.getFiducialId(), alliance),
                         String.format("X: %.1f° Area: %.1f%%", 
-                        tag.getTx(), tag.getTargetArea()));
+                        tag.getTargetXDegrees(), tag.getTargetArea()));
                 }
                 
                 // Display robot pose if available

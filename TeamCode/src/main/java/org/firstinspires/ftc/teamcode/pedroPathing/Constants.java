@@ -18,6 +18,7 @@ public class Constants {
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
+                .threeWheelIMULocalizer(localizerConstants)
                 .pathConstraints(pathConstraints)
                 .mecanumDrivetrain(driveConstants)
                 .build();
@@ -37,9 +38,9 @@ public class Constants {
             .forwardTicksToInches(.001989436789)
             .strafeTicksToInches(.001989436789)
             .turnTicksToInches(.001989436789)
-            .leftPodY(1)
-            .rightPodY(-1)
-            .strafePodX(-2.5)
+            .leftPodY(3)
+            .rightPodY(-3.75)
+            .strafePodX(-1)
             .leftEncoder_HardwareMapName("leftFront")
             .rightEncoder_HardwareMapName("rightRear")
             .strafeEncoder_HardwareMapName("rightFront")
