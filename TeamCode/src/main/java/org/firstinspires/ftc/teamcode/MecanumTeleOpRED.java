@@ -7,9 +7,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.subsystems.TurretTargeting;
+
 
 @TeleOp
-public class FieldCentricMecanumTeleOp extends LinearOpMode {
+public class MecanumTeleOpRED extends LinearOpMode {
+    private Turret turret;
+    private TurretTargeting targeting;
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
@@ -34,6 +39,7 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
+
 
         waitForStart();
 
@@ -72,6 +78,10 @@ public class FieldCentricMecanumTeleOp extends LinearOpMode {
             backLeftMotor.setPower(backLeftPower);
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
+
+            if (gamepad1.left_bumper) {
+                targeting.aimAtRedBasket();
+            }
         }
     }
 }
