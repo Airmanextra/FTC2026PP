@@ -10,12 +10,13 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.TurretTargeting;
-
+import org.firstinspires.ftc.teamcode.subsystems.SmartShooter;
 
 @TeleOp
 public class MecanumTeleOpBLUE extends LinearOpMode {
     private Turret turret;
     private TurretTargeting targeting;
+    private SmartShooter shooter;
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
@@ -41,7 +42,9 @@ public class MecanumTeleOpBLUE extends LinearOpMode {
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
-
+        shooter = new SmartShooter(hardwareMap);
+        targeting = new TurretTargeting(hardwareMap);
+        turret = new Turret(hardwareMap);
 
 
         waitForStart();
@@ -85,6 +88,17 @@ public class MecanumTeleOpBLUE extends LinearOpMode {
             if (gamepad1.left_bumper) {
                 targeting.aimAtBlueBasket();
             }
+            if (gamepad1.right_trigger > 0.5) {
+                shooter.shootAtBlueBasket();
+            }
+
+            telemetry.addData("Shooter RPM", shooter.getCurrentRPM());  
+            telemetry.addData("Shooter Power", shooter.getShooterPower());
+            telemetry.addData("Shooter Target RPM", shooter.getRequiredRPM(false));
+            telemetry.addData("Shooter At Target Velocity", shooter.isAtTargetVelocity(shooter.getRequiredRPM(false), 100));
+            telemetry.addData("Shooter On Target", shooter.shootAtBlueBasket());
+            telemetry.update();
+
         }
     }
 }

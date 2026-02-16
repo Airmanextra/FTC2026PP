@@ -82,6 +82,16 @@ public class MecanumTeleOpRED extends LinearOpMode {
             if (gamepad1.left_bumper) {
                 targeting.aimAtRedBasket();
             }
+            if (gamepad1.right_trigger > 0.5) {
+                shooter.shootAtRedBasket();
+            }
+
+            telemetry.addData("Shooter RPM", shooter.getCurrentRPM());  
+            telemetry.addData("Shooter Power", shooter.getShooterPower());
+            telemetry.addData("Shooter Target RPM", shooter.getRequiredRPM(true));
+            telemetry.addData("Shooter At Target Velocity", shooter.isAtTargetVelocity(shooter.getRequiredRPM(true), 100));
+            telemetry.addData("Shooter On Target", shooter.shootAtRedBasket());
+            telemetry.update();
         }
     }
 }
