@@ -7,8 +7,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 /**
  * Turret subsystem for controlling a motorized turret mechanism.
  *
- * Uses a single goBILDA 312 RPM Yellow Jacket motor (or compatible DcMotorEx)
- * on a gear that reverses direction: motor clockwise → turret counterclockwise.
+ * Uses a goBILDA 512 RPM Yellow Jacket motor (5202/5203 series with 13.7:1 ratio).
+ * Motor encoder: 28 PPR × 4 (quadrature) × 13.7 (gear ratio) = ~1536 counts per revolution.
+ * 
  * The API reflects turret direction (positive = left/CCW, negative = right/CW).
  */
 public class Turret {
@@ -20,6 +21,12 @@ public class Turret {
 
     // Default hardware name
     private static final String DEFAULT_TURRET_MOTOR_NAME = "turretMotor";
+    
+    /**
+     * Encoder counts per output shaft revolution for goBILDA 512 RPM motor.
+     * 28 PPR × 4 (quadrature) × 13.7 (gear ratio) ≈ 1536 counts/rev
+     */
+    public static final double TICKS_PER_REV = 1536.0;
 
     /**
      * Constructs a Turret with the default motor name.

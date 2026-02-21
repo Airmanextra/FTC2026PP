@@ -4,19 +4,27 @@
 
 ### Turret Motor
 - **Turret Motor:** `turretMotor`
-- **Type:** goBILDA 312 RPM Yellow Jacket motor (DcMotorEx)
+- **Type:** goBILDA 512 RPM Yellow Jacket motor (DcMotorEx)
+- **Encoder:** ~1536 counts per revolution
 
 ### Vision
 - **Limelight Camera:** `limelight`
 - **Type:** Limelight 3A
 
-### Shooter (if applicable)
+### Shooter
 - **Shooter Motor:** `shooterMotor`
-- **Type:** DcMotorEx (with encoder)
+- **Type:** goBILDA 6000 RPM Yellow Jacket motor (DcMotorEx, 1:1 ratio)
+- **Encoder:** 112 counts per revolution
 
 ### Intake
 - **Intake Motor:** `intakeMotor`
 - **Type:** goBILDA 512 RPM Yellow Jacket motor (DcMotorEx)
+- **Encoder:** ~1536 counts per revolution
+
+### Transfer
+- **Transfer Motor:** `transferMotor`
+- **Type:** goBILDA 512 RPM Yellow Jacket motor (DcMotorEx)
+- **Encoder:** ~1536 counts per revolution
 
 ### Indexer (ball gate)
 - **Indexer Servo:** `indexerServo`
@@ -39,36 +47,43 @@
 ### Step 3: Add Turret Motor
 1. Find your motor controller (REV Hub)
 2. Tap on a motor port (e.g., Motor Port 1)
-3. Select "goBILDA 312 RPM" or your turret motor type
+3. Select "goBILDA 5202/5203 512 RPM" or your turret motor type
 4. Name it: `turretMotor`
 5. Save
 
-### Step 4: Add Shooter Motor (if applicable)
+### Step 4: Add Shooter Motor
 1. Find your motor controller (REV Hub)
 2. Tap on a motor port (e.g., Motor Port 0)
-3. Select "REV Robotics Core Hex Motor" (or your motor type)
+3. Select "goBILDA 5202/5203 6000 RPM" (1:1 ratio)
 4. Name it: `shooterMotor`
 5. Save
 
 ### Step 5: Add Intake Motor
 1. Tap on a motor port (e.g., Motor Port 2)
-2. Select "goBILDA 512 RPM" or your intake motor type
+2. Select "goBILDA 5202/5203 512 RPM"
 3. Name it: `intakeMotor`
 4. Save
 
-### Step 6: Add Indexer Servo
+### Step 6: Add Transfer Motor
+1. Tap on a motor port (e.g., Motor Port 3)
+2. Select "goBILDA 5202/5203 512 RPM"
+3. Name it: `transferMotor`
+4. Save
+
+### Step 7: Add Indexer Servo
 1. Tap on a servo port (e.g., Servo Port 0)
 2. Select "Servo"
 3. Name it: `indexerServo`
 4. Save
 
-### Step 7: Verify Configuration
+### Step 8: Verify Configuration
 Your configuration should show:
 ```
 Limelight 3A: limelight
-Motor Port 0: shooterMotor (DcMotorEx)
-Motor Port 1: turretMotor (DcMotorEx)
-Motor Port 2: intakeMotor (DcMotorEx)
+Motor Port 0: shooterMotor (goBILDA 6000 RPM)
+Motor Port 1: turretMotor (goBILDA 512 RPM)
+Motor Port 2: intakeMotor (goBILDA 512 RPM)
+Motor Port 3: transferMotor (goBILDA 512 RPM)
 Servo Port 0: indexerServo (Servo)
 ```
 
@@ -96,6 +111,11 @@ private static final String DEFAULT_SHOOTER_MOTOR = "shooterMotor";
 private static final String DEFAULT_INTAKE_MOTOR_NAME = "intakeMotor";
 ```
 
+### Transfer.java
+```java
+private static final String DEFAULT_TRANSFER_MOTOR_NAME = "transferMotor";
+```
+
 ### Indexer.java
 ```java
 private static final String DEFAULT_INDEXER_SERVO_NAME = "indexerServo";
@@ -112,6 +132,7 @@ LimelightVision vision = new LimelightVision(hardwareMap);
 SmartShooter shooter = new SmartShooter(hardwareMap);
 TurretTargeting targeting = new TurretTargeting(hardwareMap);
 Intake intake = new Intake(hardwareMap);
+Transfer transfer = new Transfer(hardwareMap);
 Indexer indexer = new Indexer(hardwareMap);
 ```
 
@@ -125,6 +146,7 @@ Turret turret = new Turret(hardwareMap, "myTurretMotor");
 LimelightVision vision = new LimelightVision(hardwareMap, "myLimelight");
 SmartShooter shooter = new SmartShooter(hardwareMap, "myShooterMotor");
 Intake intake = new Intake(hardwareMap, "myIntakeMotor");
+Transfer transfer = new Transfer(hardwareMap, "myTransferMotor");
 Indexer indexer = new Indexer(hardwareMap, "myIndexerServo");
 ```
 
@@ -198,10 +220,11 @@ Run `SmartShooterOpMode` - it tests everything together!
 ### REV Control Hub / Expansion Hub
 
 **Motors:**
-- Port 0: `shooterMotor`
-- Port 1: `turretMotor`
-- Port 2: `intakeMotor`
-- Ports 3-5: Drive motors (if applicable)
+- Port 0: `shooterMotor` (goBILDA 6000 RPM)
+- Port 1: `turretMotor` (goBILDA 512 RPM)
+- Port 2: `intakeMotor` (goBILDA 512 RPM)
+- Port 3: `transferMotor` (goBILDA 512 RPM)
+- Ports 4-5: Drive motors (if applicable)
 
 **Servos:**
 - Port 0: `indexerServo`
@@ -210,16 +233,19 @@ Run `SmartShooterOpMode` - it tests everything together!
 - USB Port: `limelight`
 
 **Why this layout:**
-- Shooter motor on Port 0 (easy to remember)
-- Turret motor on Port 1
+- Shooter motor on Port 0 (high-speed motor, easy to remember)
+- Turret motor on Port 1 (aiming system)
+- Intake motor on Port 2 (game piece collection)
+- Transfer motor on Port 3 (moves pieces to shooter)
 - Limelight on USB (only option)
 
 ## Configuration Checklist
 
 - [ ] Limelight 3A added as `limelight`
-- [ ] Motor added as `shooterMotor` (DcMotorEx)
-- [ ] Motor added as `turretMotor` (DcMotorEx)
-- [ ] Motor added as `intakeMotor` (DcMotorEx)
+- [ ] Motor added as `shooterMotor` (goBILDA 6000 RPM)
+- [ ] Motor added as `turretMotor` (goBILDA 512 RPM)
+- [ ] Motor added as `intakeMotor` (goBILDA 512 RPM)
+- [ ] Motor added as `transferMotor` (goBILDA 512 RPM)
 - [ ] Servo added as `indexerServo` (Servo)
 - [ ] Configuration saved
 - [ ] Robot Controller restarted
@@ -231,10 +257,11 @@ Run `SmartShooterOpMode` - it tests everything together!
 ## Ready to Go!
 
 Once your hardware is configured with these names:
-- `turretMotor`
-- `intakeMotor`
+- `turretMotor` (goBILDA 512 RPM)
+- `intakeMotor` (goBILDA 512 RPM)
+- `transferMotor` (goBILDA 512 RPM)
 - `indexerServo`
 - `limelight`
-- `shooterMotor`
+- `shooterMotor` (goBILDA 6000 RPM)
 
 All the OpModes will work automatically! Just run `SmartShooterOpMode` and press A to test the complete system.

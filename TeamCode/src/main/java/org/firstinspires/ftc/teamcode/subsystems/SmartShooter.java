@@ -162,12 +162,16 @@ public class SmartShooter {
      * @return Required RPM, or -1 if no target or unreachable
      */
     public double getRequiredRPM(boolean isRedAlliance) {
-        if (!vision.hasTarget()) {
+        // Check if the correct alliance target is visible
+        boolean hasTarget = isRedAlliance ? 
+                vision.hasRedBasketTarget() : vision.hasBlueBasketTarget();
+        
+        if (!hasTarget) {
             return -1;
         }
 
-        double verticalAngle = isRedAlliance ?
-                vision.getRedBasketX() : vision.getBlueBasketX();
+        // Use vertical angle (ty) for distance calculation
+        double verticalAngle = vision.getTargetY();
 
         double velocity = kinematics.calculateVelocityFromAngle(
                 verticalAngle,

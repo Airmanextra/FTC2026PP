@@ -1,9 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.subsystems.SmartShooter;
-import org.firstinspires.ftc.teamcode.subsystems.TurretTargeting;
 
 /**
  * Complete smart shooting system with auto-aim and velocity calculation.

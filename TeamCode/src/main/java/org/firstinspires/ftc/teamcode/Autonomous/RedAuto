@@ -12,11 +12,11 @@ import org.firstinspires.ftc.teamcode.subsystems.SmartShooter;
 import org.firstinspires.ftc.teamcode.subsystems.TurretTargeting;
 import org.firstinspires.ftc.teamcode.subsystems.Indexer;
 
-@Autonomous(name = "Blue Path Auto", group = "Pedro Pathing")
-public class BlueAuto extends OpMode {
+@Autonomous(name = "Red Path Auto", group = "Pedro Pathing")
+public class RedAuto extends OpMode {
 
     private Follower follower;
-    private BluePaths.Paths paths;
+    private RedPaths.Paths paths;
     private int step = 0;
     
     // Subsystems
@@ -38,10 +38,10 @@ public class BlueAuto extends OpMode {
     public void init() {
         follower = Constants.createFollower(hardwareMap);
 
-        // Match first pose in Basket1
-        follower.setStartingPose(new Pose(56.000, 136.000));
+        // Match first pose in Basket1 (flipped coordinates)
+        follower.setStartingPose(new Pose(56.000, 8.000));
 
-        paths = new BluePaths.Paths(follower);
+        paths = new RedPaths.Paths(follower);
         
         // Initialize subsystems
         intake = new Intake(hardwareMap);
@@ -50,7 +50,7 @@ public class BlueAuto extends OpMode {
         targeting = new TurretTargeting(hardwareMap);
         indexer = new Indexer(hardwareMap);
         
-        // Configure shooter for blue alliance
+        // Configure shooter for red alliance
         shooter.configureKinematics(0.3, 1.2, 45.0);
         shooter.configureCamera(0.25, 15.0);
         shooter.setFlywheelDiameter(0.1);
@@ -110,16 +110,16 @@ public class BlueAuto extends OpMode {
         ballsShot = 0;
         shootStartTime = System.currentTimeMillis();
         
-        // Aim at blue basket and spin up shooter
-        targeting.aimAtBlueBasket();
-        shooter.shootAtBlueBasket();
+        // Aim at red basket and spin up shooter
+        targeting.aimAtRedBasket();
+        shooter.shootAtRedBasket();
         indexer.open();
     }
     
     private void handleShooting() {
         // Continue aiming and maintaining shooter velocity
-        targeting.aimAtBlueBasket();
-        shooter.shootAtBlueBasket();
+        targeting.aimAtRedBasket();
+        shooter.shootAtRedBasket();
         
         long currentTime = System.currentTimeMillis();
         long timeSinceStart = currentTime - shootStartTime;

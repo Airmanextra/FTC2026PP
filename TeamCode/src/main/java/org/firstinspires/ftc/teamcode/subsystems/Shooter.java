@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 /**
  * Shooter subsystem for controlling a single flywheel shooter motor.
  *
- * This implementation is configured for a goBILDA 5203-2402-0001
- * Yellow Jacket planetary gear motor (5.2:1 ratio, ~1150 RPM no-load).
+ * Uses a goBILDA 6000 RPM Yellow Jacket motor (5202/5203 series, 1:1 ratio).
+ * Motor encoder: 28 PPR × 4 (quadrature) × 1 (no gearing) = 112 counts per revolution.
  *
  * The key configuration detail for closed-loop velocity control is the
  * encoder resolution in ticks per output shaft revolution.
@@ -19,16 +19,14 @@ public class Shooter {
     private static final String DEFAULT_SHOOTER_MOTOR_NAME = "shooterMotor";
 
     /**
-     * Encoder ticks per output shaft revolution for the
-     * goBILDA 5203‑2402‑0001 Yellow Jacket motor.
+     * Encoder counts per output shaft revolution for the
+     * goBILDA 6000 RPM Yellow Jacket motor (1:1 ratio).
      *
-     * According to goBILDA documentation this motor provides
-     * approximately 145.1 counts per output revolution.
+     * 28 PPR × 4 (quadrature) = 112 counts per revolution.
      *
-     * You can fine‑tune this value based on your own measurements
-     * if needed.
+     * You can fine-tune this value based on your own measurements if needed.
      */
-    public static final double TICKS_PER_REV = 145.1;
+    public static final double TICKS_PER_REV = 112.0;
 
     private final DcMotorEx shooterMotor;
 
