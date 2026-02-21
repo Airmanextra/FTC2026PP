@@ -1,77 +1,69 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
- * Turret subsystem for controlling a two-servo turret mechanism.
- * 
- * The turret uses two continuous rotation servos that spin in the same direction
- * to rotate the turret mechanism. The servos are mechanically coupled through gears
- * that reverse the direction, so when the servos spin clockwise, the turret rotates
- * counterclockwise.
+ * Turret subsystem for controlling a motorized turret mechanism.
+ *
+ * Uses a single goBILDA 312 RPM Yellow Jacket motor (or compatible DcMotorEx)
+ * on a gear that reverses direction: motor clockwise → turret counterclockwise.
+ * The API reflects turret direction (positive = left/CCW, negative = right/CW).
  */
 public class Turret {
-    // Servo instances
-    private CRServo leftServo;
-    private CRServo rightServo;
-    
+
+    private final DcMotorEx turretMotor;
+
     // State tracking
     private double currentPower;
-    
-    // Default hardware names
-    private static final String DEFAULT_LEFT_SERVO_NAME = "turretRotOne";
-    private static final String DEFAULT_RIGHT_SERVO_NAME = "turretRotTwo";
-    
+
+    // Default hardware name
+    private static final String DEFAULT_TURRET_MOTOR_NAME = "turretMotor";
+
     /**
-     * Constructs a Turret with default servo names.
-     * 
+     * Constructs a Turret with the default motor name.
+     *
      * @param hardwareMap The FTC hardware map for retrieving configured devices
-     * @throws IllegalArgumentException if a servo cannot be found in the hardware map
+     * @throws IllegalArgumentException if the motor cannot be found in the hardware map
      */
     public Turret(HardwareMap hardwareMap) {
-        this(hardwareMap, DEFAULT_LEFT_SERVO_NAME, DEFAULT_RIGHT_SERVO_NAME);
+        this(hardwareMap, DEFAULT_TURRET_MOTOR_NAME);
     }
-    
+
     /**
-     * Constructs a Turret with custom servo names.
-     * 
+     * Constructs a Turret with a custom motor name.
+     *
      * @param hardwareMap The FTC hardware map for retrieving configured devices
-     * @param leftServoName The hardware name for the left servo
-     * @param rightServoName The hardware name for the right servo
-     * @throws IllegalArgumentException if a servo cannot be found in the hardware map
+     * @param motorName   The hardware name for the turret motor
+     * @throws IllegalArgumentException if the motor cannot be found in the hardware map
      */
-    public Turret(HardwareMap hardwareMap, String leftServoName, String rightServoName) {
-        // Initialize current power to zero (stopped)
+    public Turret(HardwareMap hardwareMap, String motorName) {
         this.currentPower = 0.0;
-        
-        // Retrieve left servo with error handling
+
         try {
-            this.leftServo = hardwareMap.get(CRServo.class, leftServoName);
+            this.turretMotor = hardwareMap.get(DcMotorEx.class, motorName);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Could not find servo: " + leftServoName);
+            throw new IllegalArgumentException("Could not find motor: " + motorName);
         }
-        
-        // Retrieve right servo with error handling
-        try {
-            this.rightServo = hardwareMap.get(CRServo.class, rightServoName);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Could not find servo: " + rightServoName);
-        }
+
+        // Configure motor for open-loop power control
+        turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        turretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
-    
+
     /**
      * Gets the current power setting of the turret.
-     * 
+     *
      * @return The current power value in the range [-1.0, 1.0]
      */
     public double getCurrentPower() {
         return currentPower;
     }
-    
+
     /**
      * Gets the current rotation direction of the turret.
-     * 
+     *
      * @return "LEFT" for counterclockwise rotation (positive power),
      *         "RIGHT" for clockwise rotation (negative power),
      *         "STOPPED" for zero power
@@ -85,67 +77,57 @@ public class Turret {
             return "STOPPED";
         }
     }
-    
+
     /**
-     * Sets the rotation power for both servos.
-     * 
-     * Positive power rotates the turret counterclockwise (accounting for gear reversal).
-     * Negative power rotates the turret clockwise.
+     * Sets the rotation power for the turret motor.
+     *
+     * Positive power rotates the turret counterclockwise (left).
+     * Negative power rotates clockwise (right).
      * Power values outside [-1.0, 1.0] are clamped to the valid range.
-     * 
+     *
      * @param power The desired power value in the range [-1.0, 1.0]
      */
     public void setPower(double power) {
-        // Clamp the power value to valid range
         double clampedPower = clampPower(power);
-        
-        // Set both servos to the same power value
-        leftServo.setPower(clampedPower);
-        rightServo.setPower(clampedPower);
-        
-        // Update the current power state
+        // Invert power: gear reverses direction (motor CW → turret CCW)
+        turretMotor.setPower(-clampedPower);
         currentPower = clampedPower;
     }
-    
+
     /**
      * Rotates the turret counterclockwise (left) at the specified speed.
-     * 
-     * This is a convenience method that calls setPower with a positive speed value.
-     * The speed will be clamped to the valid range [0, 1.0].
-     * 
-     * @param speed The desired rotation speed (positive value)
+     *
+     * @param speed The desired rotation speed (positive value, clamped to [0, 1.0])
      */
     public void rotateLeft(double speed) {
         setPower(speed);
     }
-    
+
     /**
      * Rotates the turret clockwise (right) at the specified speed.
-     * 
-     * This is a convenience method that calls setPower with a negative speed value.
-     * The speed will be clamped to the valid range [0, 1.0].
-     * 
-     * @param speed The desired rotation speed (positive value)
+     *
+     * @param speed The desired rotation speed (positive value, clamped to [0, 1.0])
      */
     public void rotateRight(double speed) {
         setPower(-speed);
     }
-    
+
     /**
-     * Stops the turret rotation by setting both servos to zero power.
-     * 
-     * The turret will maintain its current position until a new rotation command is issued.
+     * Stops the turret rotation.
      */
     public void stop() {
         setPower(0);
     }
-    
+
     /**
-     * Clamps a power value to the valid range [-1.0, 1.0].
-     * 
-     * @param power The power value to clamp
-     * @return The clamped power value
+     * Gets the underlying motor for advanced control or tuning.
+     *
+     * @return The turret DcMotorEx instance
      */
+    public DcMotorEx getMotor() {
+        return turretMotor;
+    }
+
     private double clampPower(double power) {
         return Math.max(-1.0, Math.min(1.0, power));
     }

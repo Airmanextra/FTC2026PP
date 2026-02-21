@@ -146,6 +146,16 @@ public class SmartShooter {
     }
 
     /**
+     * Gets the current shooter motor power (0-1).
+     * Note: Only meaningful when using setShooterPower; when using setShooterRPM this may be 0.
+     *
+     * @return Current motor power
+     */
+    public double getShooterPower() {
+        return shooter.getMotor().getPower();
+    }
+
+    /**
      * Gets the required RPM for the current target.
      *
      * @param isRedAlliance true for red alliance, false for blue

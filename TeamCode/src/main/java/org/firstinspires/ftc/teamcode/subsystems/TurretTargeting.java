@@ -27,15 +27,13 @@ public class TurretTargeting {
     
     /**
      * Constructs a TurretTargeting system with custom hardware names.
-     * 
-     * @param hardwareMap The FTC hardware map
-     * @param leftServoName Left turret servo name
-     * @param rightServoName Right turret servo name
-     * @param limelightName Limelight device name
+     *
+     * @param hardwareMap    The FTC hardware map
+     * @param turretMotorName Turret motor name
+     * @param limelightName  Limelight device name
      */
-    public TurretTargeting(HardwareMap hardwareMap, String leftServoName, 
-                          String rightServoName, String limelightName) {
-        this.turret = new Turret(hardwareMap, leftServoName, rightServoName);
+    public TurretTargeting(HardwareMap hardwareMap, String turretMotorName, String limelightName) {
+        this.turret = new Turret(hardwareMap, turretMotorName);
         this.vision = new LimelightVision(hardwareMap, limelightName);
     }
     

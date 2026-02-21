@@ -9,12 +9,13 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.TurretTargeting;
-
+import org.firstinspires.ftc.teamcode.subsystems.SmartShooter;
 
 @TeleOp
 public class MecanumTeleOpRED extends LinearOpMode {
     private Turret turret;
     private TurretTargeting targeting;
+    private SmartShooter shooter;
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
@@ -40,6 +41,9 @@ public class MecanumTeleOpRED extends LinearOpMode {
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
+        shooter = new SmartShooter(hardwareMap);
+        targeting = new TurretTargeting(hardwareMap);
+        turret = new Turret(hardwareMap);
 
         waitForStart();
 

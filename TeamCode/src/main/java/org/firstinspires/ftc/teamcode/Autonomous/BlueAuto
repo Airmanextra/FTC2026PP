@@ -1,0 +1,72 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
+
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+
+@Autonomous(name = "Blue Path Auto", group = "Pedro Pathing")
+public class BlueAuto extends OpMode {
+
+    private Follower follower;
+    private BluePaths paths;
+    private int step = 0;
+
+    @Override
+    public void init() {
+        follower = Constants.createFollower(hardwareMap);
+
+        // Match first pose in Path2
+        follower.setStartingPose(new Pose(56.000, 8.000));
+
+        paths = new BluePaths(follower);
+    }
+
+    @Override
+    public void start() {
+        follower.followPath(paths.Path2);
+    }
+
+    @Override
+    public void loop() {
+        follower.update();
+
+        if (follower.atParametricEnd()) {
+            step++;
+
+            switch (step) {
+                case 1:
+                    follower.followPath(paths.Collect1);
+                    break;
+                case 2:
+                    follower.followPath(paths.Basket1);
+                    break;
+                case 3:
+                    follower.followPath(paths.Path4);
+                    break;
+                case 4:
+                    follower.followPath(paths.Collect2);
+                    break;
+                case 5:
+                    follower.followPath(paths.Basket2);
+                    break;
+                case 6:
+                    follower.followPath(paths.Path7);
+                    break;
+                case 7:
+                    follower.followPath(paths.Collect3);
+                    break;
+                case 8:
+                    follower.followPath(paths.Path9);
+                    break;
+                default:
+                    // Stop when done
+                    follower.startTeleopDrive(true);
+                    follower.setTeleOpDrive(0, 0, 0, true);
+                    break;
+            }
+        }
+    }
+}
