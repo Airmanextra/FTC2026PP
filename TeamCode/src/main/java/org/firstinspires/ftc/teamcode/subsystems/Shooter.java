@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
@@ -28,7 +29,8 @@ public class Shooter {
      */
     public static final double TICKS_PER_REV = 112.0;
 
-    private final DcMotorEx shooterMotor;
+    private final DcMotorEx leftShooterMotor;
+    private final DcMotorEx rightShooterMotor;
 
     // Tracks the last commanded RPM for convenience / telemetry
     private double targetRPM = 0.0;
@@ -41,26 +43,33 @@ public class Shooter {
      * @throws IllegalArgumentException if the motor cannot be found
      */
     public Shooter(HardwareMap hardwareMap) {
-        this(hardwareMap, DEFAULT_SHOOTER_MOTOR_NAME);
+        this(hardwareMap, DEFAULT_SHOOTER_MOTOR_NAME, DEFAULT_SHOOTER_MOTOR_NAME);
     }
 
     /**
      * Constructs a Shooter with a custom motor hardware name.
      *
      * @param hardwareMap FTC hardware map
-     * @param motorName   configured hardware name of the shooter motor
+     * @param leftMotorName   configured hardware name of the left shooter motor
+     * @param rightMotorName   configured hardware name of the right shooter motor
      * @throws IllegalArgumentException if the motor cannot be found
      */
-    public Shooter(HardwareMap hardwareMap, String motorName) {
+    public Shooter(HardwareMap hardwareMap, String leftMotorName, String rightMotorName) {
         try {
-            this.shooterMotor = hardwareMap.get(DcMotorEx.class, motorName);
+            this.leftShooterMotor = hardwareMap.get(DcMotorEx.class, leftMotorName);
+            this.rightShooterMotor = hardwareMap.get(DcMotorEx.class, rightMotorName);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Could not find shooter motor: " + motorName);
+            throw new IllegalArgumentException("Could not find shooter motors: " + leftMotorName + ", " + rightMotorName);
         }
 
-        // Default configuration for a flywheel shooter
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        // Default configuration for flywheel shooter
+        leftShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        rightShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     /**
@@ -70,8 +79,11 @@ public class Shooter {
      * @param rpm desired motor RPM
      */
     public void setRPM(double rpm) {
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterMotor.setVelocity(rpmToTicksPerSecond(rpm));
+        leftShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftShooterMotor.setVelocity(rpmToTicksPerSecond(rpm));
+
+        rightShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightShooterMotor.setVelocity(rpmToTicksPerSecond(rpm));
         targetRPM = rpm;
     }
 
@@ -81,8 +93,11 @@ public class Shooter {
      * @param power motor power in the range [-1.0, 1.0]
      */
     public void setPower(double power) {
-        shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooterMotor.setPower(power);
+        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftShooterMotor.setPower(power);
+
+        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightShooterMotor.setPower(power);
         // When in power mode targetRPM is no longer meaningful
         targetRPM = 0.0;
     }
@@ -91,15 +106,17 @@ public class Shooter {
      * Stops the shooter motor.
      */
     public void stop() {
-        shooterMotor.setPower(0.0);
+        leftShooterMotor.setPower(0.0);
+        rightShooterMotor.setPower(0.0);
     }
 
     /**
      * @return current shooter velocity in RPM
      */
     public double getCurrentRPM() {
-        double ticksPerSecond = shooterMotor.getVelocity();
-        return ticksPerSecondToRPM(ticksPerSecond);
+        double leftTicksPerSecond = leftShooterMotor.getVelocity();
+        double rightTicksPerSecond = rightShooterMotor.getVelocity();
+        return (ticksPerSecondToRPM(leftTicksPerSecond) + ticksPerSecondToRPM(rightTicksPerSecond)) / 2.0;
     }
 
     /**
@@ -128,7 +145,7 @@ public class Shooter {
      * @return DcMotorEx shooter motor
      */
     public DcMotorEx getMotor() {
-        return shooterMotor;
+        return leftShooterMotor; // Return left motor for backward compatibility
     }
 
     /**

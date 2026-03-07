@@ -21,7 +21,8 @@ public class SmartShooter {
     private double cameraMountAngle = 15.0; // Camera tilt angle in degrees
 
     // Default hardware names
-    private static final String DEFAULT_SHOOTER_MOTOR = "shooterMotor";
+    private static final String DEFAULT_LEFT_SHOOTER_MOTOR = "leftShooterMotor";
+    private static final String DEFAULT_RIGHT_SHOOTER_MOTOR = "rightShooterMotor";
 
     /**
      * Constructs a SmartShooter with default hardware names.
@@ -29,16 +30,17 @@ public class SmartShooter {
      * @param hardwareMap The FTC hardware map
      */
     public SmartShooter(HardwareMap hardwareMap) {
-        this(hardwareMap, DEFAULT_SHOOTER_MOTOR);
+        this(hardwareMap, DEFAULT_LEFT_SHOOTER_MOTOR, DEFAULT_RIGHT_SHOOTER_MOTOR);
     }
 
     /**
      * Constructs a SmartShooter with custom hardware names.
      *
-     * @param hardwareMap      The FTC hardware map
-     * @param shooterMotorName Name of the shooter motor
+     * @param hardwareMap          The FTC hardware map
+     * @param leftShooterMotorName Name of the left shooter motor
+     * @param rightShooterMotorName Name of the right shooter motor
      */
-    public SmartShooter(HardwareMap hardwareMap, String shooterMotorName) {
+    public SmartShooter(HardwareMap hardwareMap, String leftShooterMotorName, String rightShooterMotorName) {
         // Initialize vision
         this.vision = new LimelightVision(hardwareMap);
 
@@ -50,8 +52,8 @@ public class SmartShooter {
                 45.0   // Launch angle (degrees)
         );
 
-        // Initialize shooter subsystem (configured for goBILDA 5203-2402-0001)
-        this.shooter = new Shooter(hardwareMap, shooterMotorName);
+        // Initialize shooter subsystem with two motors
+        this.shooter = new Shooter(hardwareMap, leftShooterMotorName, rightShooterMotorName);
     }
 
     /**
