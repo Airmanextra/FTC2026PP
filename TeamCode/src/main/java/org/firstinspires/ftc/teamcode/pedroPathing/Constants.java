@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(7);
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(0.85, 80, 0.8, 0.8);  // Reduced speeds for belt protection
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
@@ -28,7 +28,7 @@ public class Constants {
                 .build();
     }
     public static MecanumConstants driveConstants = new MecanumConstants()
-            .maxPower(1)
+            .maxPower(0.85)  // Reduced from 1.0 to prevent belt skipping on GoBuilda 312 RPM motors
             .rightFrontMotorName("rf")
             .rightRearMotorName("rb")
             .leftRearMotorName("lb")
@@ -40,13 +40,12 @@ public class Constants {
 
    public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(-183.753756/2.54)
-            .strafePodX(-105.8753813/2.54)
+            .strafePodX(-2.44)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
-            //TODO: actually change the encoder directions
             //TODO: actually tune the values
 }
 
