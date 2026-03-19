@@ -333,10 +333,12 @@ class ForwardVelocityTuner extends OpMode {
     public static double RECORD_NUMBER = 10;
 
     private boolean end;
+    private double startX;
 
     @Override
     public void init() {
         follower.setStartingPose(new Pose(72, 72));
+        startX = 72;
     }
 
     /** This initializes the drive motors as well as the cache of velocities and the Panels telemetry. */
@@ -358,6 +360,7 @@ class ForwardVelocityTuner extends OpMode {
         for (int i = 0; i < RECORD_NUMBER; i++) {
             velocities.add(0.0);
         }
+        startX = follower.getPose().getX();
         follower.startTeleopDrive(true);
         follower.update();
         end = false;
@@ -379,14 +382,15 @@ class ForwardVelocityTuner extends OpMode {
         follower.update();
         draw();
 
+        double currentX = follower.getPose().getX();
+        double distanceTraveled = Math.abs(currentX - startX);
 
         if (!end) {
-            if (Math.abs(follower.getPose().getX()) > (DISTANCE + 72)) {
+            if (distanceTraveled >= DISTANCE) {
                 end = true;
                 stopRobot();
             } else {
                 follower.setTeleOpDrive(1,0,0,true);
-                //double currentVelocity = Math.abs(follower.getVelocity().getXComponent());
                 double currentVelocity = Math.abs(follower.poseTracker.getLocalizer().getVelocity().getX());
                 velocities.add(currentVelocity);
                 velocities.remove(0);
@@ -399,6 +403,7 @@ class ForwardVelocityTuner extends OpMode {
             }
             average /= velocities.size();
             telemetryM.debug("Forward Velocity: " + average);
+            telemetryM.debug("Distance Traveled: " + distanceTraveled);
             telemetryM.debug("\n");
             telemetryM.debug("Press A to set the Forward Velocity temporarily (while robot remains on).");
 
@@ -436,14 +441,16 @@ class ForwardVelocityTuner extends OpMode {
 class LateralVelocityTuner extends OpMode {
     private final ArrayList<Double> velocities = new ArrayList<>();
 
-    public static double DISTANCE = 48;
+    public static double DISTANCE = 24;
     public static double RECORD_NUMBER = 10;
 
     private boolean end;
+    private double startY;
 
     @Override
     public void init() {
         follower.setStartingPose(new Pose(72, 72));
+        startY = 72;
     }
 
     /**
@@ -467,6 +474,7 @@ class LateralVelocityTuner extends OpMode {
         for (int i = 0; i < RECORD_NUMBER; i++) {
             velocities.add(0.0);
         }
+        startY = follower.getPose().getY();
         follower.startTeleopDrive(true);
         follower.update();
     }
@@ -487,8 +495,11 @@ class LateralVelocityTuner extends OpMode {
         follower.update();
         draw();
 
+        double currentY = follower.getPose().getY();
+        double distanceTraveled = Math.abs(currentY - startY);
+
         if (!end) {
-            if (Math.abs(follower.getPose().getY()) > (DISTANCE + 72)) {
+            if (distanceTraveled >= DISTANCE) {
                 end = true;
                 stopRobot();
             } else {
@@ -506,6 +517,7 @@ class LateralVelocityTuner extends OpMode {
             average /= velocities.size();
 
             telemetryM.debug("Strafe Velocity: " + average);
+            telemetryM.debug("Distance Traveled: " + distanceTraveled);
             telemetryM.debug("\n");
             telemetryM.debug("Press A to set the Lateral Velocity temporarily (while robot remains on).");
             telemetryM.update(telemetry);
