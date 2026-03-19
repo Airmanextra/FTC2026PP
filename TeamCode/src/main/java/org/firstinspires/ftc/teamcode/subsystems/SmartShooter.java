@@ -21,8 +21,8 @@ public class SmartShooter {
     private double cameraMountAngle = 15.0; // Camera tilt angle in degrees
 
     // Default hardware names
-    private static final String DEFAULT_LEFT_SHOOTER_MOTOR = "leftShooterMotor";
-    private static final String DEFAULT_RIGHT_SHOOTER_MOTOR = "rightShooterMotor";
+    private static final String DEFAULT_LEFT_SHOOTER_MOTOR = "sl";
+    private static final String DEFAULT_RIGHT_SHOOTER_MOTOR = "sr";
 
     /**
      * Constructs a SmartShooter with default hardware names.

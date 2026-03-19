@@ -5,12 +5,13 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
- * Roller intake subsystem for collecting game pieces.
+ * Roller intake subsystem for collecting game pieces and transferring them.
  *
  * Uses a goBILDA 512 RPM Yellow Jacket motor (5202/5203 series with 13.7:1 ratio).
  * Motor encoder: 28 PPR × 4 (quadrature) × 13.7 (gear ratio) = ~1536 counts per revolution.
  * 
- * Positive power intakes (pulls in); negative power outtakes (expels).
+ * This motor drives both the intake rollers and transfer mechanism via belt.
+ * Positive power intakes and transfers; negative power reverses both.
  */
 public class Intake {
 
@@ -70,7 +71,7 @@ public class Intake {
     }
 
     /**
-     * Runs the intake to pull in game pieces.
+     * Runs the intake and transfer to pull in and move game pieces.
      *
      * @param power Power in range [0, 1.0]
      */
@@ -79,12 +80,30 @@ public class Intake {
     }
 
     /**
-     * Runs the intake in reverse to expel game pieces.
+     * Runs the intake and transfer in reverse to expel game pieces.
      *
      * @param power Power in range [0, 1.0]
      */
     public void outtake(double power) {
         setPower(-Math.abs(power));
+    }
+
+    /**
+     * Alias for intake() - runs both intake and transfer.
+     *
+     * @param power Power in range [0, 1.0]
+     */
+    public void transfer(double power) {
+        intake(power);
+    }
+
+    /**
+     * Alias for outtake() - reverses both intake and transfer.
+     *
+     * @param power Power in range [0, 1.0]
+     */
+    public void reverse(double power) {
+        outtake(power);
     }
 
     /**

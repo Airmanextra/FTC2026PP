@@ -12,9 +12,15 @@
 - **Type:** Limelight 3A
 
 ### Shooter
-- **Shooter Motor:** `shooterMotor`
+- **Left Shooter Motor:** `sl`
 - **Type:** goBILDA 6000 RPM Yellow Jacket motor (DcMotorEx, 1:1 ratio)
 - **Encoder:** 112 counts per revolution
+- **Direction:** Clockwise
+
+- **Right Shooter Motor:** `sr`
+- **Type:** goBILDA 6000 RPM Yellow Jacket motor (DcMotorEx, 1:1 ratio)
+- **Encoder:** 112 counts per revolution
+- **Direction:** Counterclockwise
 
 ### Intake
 - **Intake Motor:** `intakeMotor`
@@ -80,10 +86,11 @@
 Your configuration should show:
 ```
 Limelight 3A: limelight
-Motor Port 0: shooterMotor (goBILDA 6000 RPM)
-Motor Port 1: turretMotor (goBILDA 512 RPM)
-Motor Port 2: intakeMotor (goBILDA 512 RPM)
-Motor Port 3: transferMotor (goBILDA 512 RPM)
+Motor Port 0: sl (goBILDA 6000 RPM)
+Motor Port 1: sr (goBILDA 6000 RPM)
+Motor Port 2: turretMotor (goBILDA 512 RPM)
+Motor Port 3: intakeMotor (goBILDA 512 RPM)
+Motor Port 4: transferMotor (goBILDA 512 RPM)
 Servo Port 0: indexerServo (Servo)
 ```
 
@@ -220,11 +227,12 @@ Run `SmartShooterOpMode` - it tests everything together!
 ### REV Control Hub / Expansion Hub
 
 **Motors:**
-- Port 0: `shooterMotor` (goBILDA 6000 RPM)
-- Port 1: `turretMotor` (goBILDA 512 RPM)
-- Port 2: `intakeMotor` (goBILDA 512 RPM)
-- Port 3: `transferMotor` (goBILDA 512 RPM)
-- Ports 4-5: Drive motors (if applicable)
+- Port 0: `sl` (goBILDA 6000 RPM - Left Shooter)
+- Port 1: `sr` (goBILDA 6000 RPM - Right Shooter)
+- Port 2: `turretMotor` (goBILDA 512 RPM)
+- Port 3: `intakeMotor` (goBILDA 512 RPM)
+- Port 4: `transferMotor` (goBILDA 512 RPM)
+- Port 5: Drive motors (if applicable)
 
 **Servos:**
 - Port 0: `indexerServo`
@@ -242,7 +250,8 @@ Run `SmartShooterOpMode` - it tests everything together!
 ## Configuration Checklist
 
 - [ ] Limelight 3A added as `limelight`
-- [ ] Motor added as `shooterMotor` (goBILDA 6000 RPM)
+- [ ] Motor added as `sl` (goBILDA 6000 RPM - Left Shooter)
+- [ ] Motor added as `sr` (goBILDA 6000 RPM - Right Shooter)
 - [ ] Motor added as `turretMotor` (goBILDA 512 RPM)
 - [ ] Motor added as `intakeMotor` (goBILDA 512 RPM)
 - [ ] Motor added as `transferMotor` (goBILDA 512 RPM)
@@ -257,11 +266,12 @@ Run `SmartShooterOpMode` - it tests everything together!
 ## Ready to Go!
 
 Once your hardware is configured with these names:
+- `sl` (goBILDA 6000 RPM - Left Shooter)
+- `sr` (goBILDA 6000 RPM - Right Shooter)
 - `turretMotor` (goBILDA 512 RPM)
 - `intakeMotor` (goBILDA 512 RPM)
 - `transferMotor` (goBILDA 512 RPM)
 - `indexerServo`
 - `limelight`
-- `shooterMotor` (goBILDA 6000 RPM)
 
 All the OpModes will work automatically! Just run `SmartShooterOpMode` and press A to test the complete system.

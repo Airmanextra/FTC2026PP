@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.subsystems.TurretTargeting;
 import org.firstinspires.ftc.teamcode.subsystems.SmartShooter;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Transfer;
+
 import org.firstinspires.ftc.teamcode.subsystems.Indexer;
 
 @TeleOp
@@ -20,11 +20,19 @@ public class MecanumTeleOpRED extends LinearOpMode {
     private TurretTargeting targeting;
     private SmartShooter shooter;
     private Intake intake;
-    private Transfer transfer;
     private Indexer indexer;
     
     private static final double INTAKE_POWER = 0.8;
-    private static final double TRANSFER_POWER = 0.8;
+    
+    // Power ramping variables to reduce belt skipping
+    private double prevFrontLeftPower = 0;
+    private double prevBackLeftPower = 0;
+    private double prevFrontRightPower = 0;
+    private double prevBackRightPower = 0;
+    
+    // Maximum power change per loop (adjust based on testing)
+    private static final double MAX_POWER_CHANGE = 0.15; // Reduced from instant changes
+    private static final double MAX_DRIVE_POWER = 0.85;  // Limit max power for GoBuilda 312 RPM
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
@@ -50,11 +58,16 @@ public class MecanumTeleOpRED extends LinearOpMode {
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
+        // Set motor zero power behavior to reduce stress on belts
+        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         shooter = new SmartShooter(hardwareMap);
         targeting = new TurretTargeting(hardwareMap);
         turret = new Turret(hardwareMap);
         intake = new Intake(hardwareMap);
-        transfer = new Transfer(hardwareMap);
         indexer = new Indexer(hardwareMap);
         
         // Configure shooter
@@ -95,6 +108,24 @@ public class MecanumTeleOpRED extends LinearOpMode {
             double frontRightPower = (rotY - rotX - rx) / denominator;
             double backRightPower = (rotY + rotX - rx) / denominator;
 
+            // Apply power limiting for GoBuilda 312 RPM motors
+            frontLeftPower = Math.max(-MAX_DRIVE_POWER, Math.min(MAX_DRIVE_POWER, frontLeftPower));
+            backLeftPower = Math.max(-MAX_DRIVE_POWER, Math.min(MAX_DRIVE_POWER, backLeftPower));
+            frontRightPower = Math.max(-MAX_DRIVE_POWER, Math.min(MAX_DRIVE_POWER, frontRightPower));
+            backRightPower = Math.max(-MAX_DRIVE_POWER, Math.min(MAX_DRIVE_POWER, backRightPower));
+
+            // Apply power ramping to reduce belt skipping
+            frontLeftPower = rampPower(prevFrontLeftPower, frontLeftPower);
+            backLeftPower = rampPower(prevBackLeftPower, backLeftPower);
+            frontRightPower = rampPower(prevFrontRightPower, frontRightPower);
+            backRightPower = rampPower(prevBackRightPower, backRightPower);
+
+            // Store current powers for next iteration
+            prevFrontLeftPower = frontLeftPower;
+            prevBackLeftPower = backLeftPower;
+            prevFrontRightPower = frontRightPower;
+            prevBackRightPower = backRightPower;
+
             frontLeftMotor.setPower(frontLeftPower);
             backLeftMotor.setPower(backLeftPower);
             frontRightMotor.setPower(frontRightPower);
@@ -108,18 +139,17 @@ public class MecanumTeleOpRED extends LinearOpMode {
             if (gamepad1.right_trigger > 0.5) {
                 shooter.shootAtRedBasket();
                 indexer.open();
-                // Feed balls with transfer when shooting
-                transfer.transfer(TRANSFER_POWER);
+                // Feed balls with intake/transfer when shooting
+                intake.transfer(INTAKE_POWER);
             } else {
                 shooter.stopShooter();
-                transfer.stop();
+                intake.stop();
                 indexer.close();
             }
             
             // Intake control with square button
             if (gamepad1.square) {
                 intake.intake(INTAKE_POWER);
-                transfer.transfer(TRANSFER_POWER);
                 indexer.open();
             } else if (gamepad1.right_trigger <= 0.5) {
                 // Only stop intake if not shooting
@@ -136,9 +166,24 @@ public class MecanumTeleOpRED extends LinearOpMode {
             telemetry.addData("Shooter At Target Velocity", shooter.isAtTargetVelocity(shooter.getRequiredRPM(true), 100));
             telemetry.addData("Shooter On Target", shooter.shootAtRedBasket());
             telemetry.addData("Intake Power", intake.getCurrentPower());
-            telemetry.addData("Transfer Power", transfer.getCurrentPower());
             telemetry.addData("Indexer Open", indexer.isOpen());
             telemetry.update();
+        }
+    }
+    
+    /**
+     * Smoothly ramp motor power to reduce belt skipping
+     * @param prevPower Previous motor power
+     * @param targetPower Desired motor power
+     * @return Ramped power value
+     */
+    private double rampPower(double prevPower, double targetPower) {
+        double powerDiff = targetPower - prevPower;
+        
+        if (Math.abs(powerDiff) <= MAX_POWER_CHANGE) {
+            return targetPower;
+        } else {
+            return prevPower + Math.signum(powerDiff) * MAX_POWER_CHANGE;
         }
     }
 }

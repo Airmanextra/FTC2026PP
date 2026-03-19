@@ -6,9 +6,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
- * Shooter subsystem for controlling a single flywheel shooter motor.
+ * Shooter subsystem for controlling dual flywheel shooter motors.
  *
- * Uses a goBILDA 6000 RPM Yellow Jacket motor (5202/5203 series, 1:1 ratio).
+ * Uses two goBILDA 6000 RPM Yellow Jacket motors (5202/5203 series, 1:1 ratio).
+ * Left motor (sl) spins clockwise, right motor (sr) spins counterclockwise.
  * Motor encoder: 28 PPR × 4 (quadrature) × 1 (no gearing) = 112 counts per revolution.
  *
  * The key configuration detail for closed-loop velocity control is the
@@ -16,8 +17,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 public class Shooter {
 
-    // Default hardware name (matches HARDWARE_CONFIG.md)
-    private static final String DEFAULT_SHOOTER_MOTOR_NAME = "shooterMotor";
+    // Default hardware names
+    private static final String DEFAULT_LEFT_MOTOR_NAME = "sl";
+    private static final String DEFAULT_RIGHT_MOTOR_NAME = "sr";
 
     /**
      * Encoder counts per output shaft revolution for the
@@ -29,94 +31,121 @@ public class Shooter {
      */
     public static final double TICKS_PER_REV = 112.0;
 
-    private final DcMotorEx leftShooterMotor;
-    private final DcMotorEx rightShooterMotor;
+    private final DcMotorEx sl;
+    private final DcMotorEx sr;
 
     // Tracks the last commanded RPM for convenience / telemetry
     private double targetRPM = 0.0;
 
     /**
-     * Constructs a Shooter using the default hardware name
-     * defined in {@link #DEFAULT_SHOOTER_MOTOR_NAME}.
+     * Constructs a Shooter using the default hardware names (sl and sr).
      *
      * @param hardwareMap FTC hardware map
-     * @throws IllegalArgumentException if the motor cannot be found
+     * @throws IllegalArgumentException if the motors cannot be found
      */
     public Shooter(HardwareMap hardwareMap) {
-        this(hardwareMap, DEFAULT_SHOOTER_MOTOR_NAME, DEFAULT_SHOOTER_MOTOR_NAME);
+        this(hardwareMap, DEFAULT_LEFT_MOTOR_NAME, DEFAULT_RIGHT_MOTOR_NAME);
     }
 
     /**
-     * Constructs a Shooter with a custom motor hardware name.
+     * Constructs a Shooter with custom motor hardware names.
      *
      * @param hardwareMap FTC hardware map
-     * @param leftMotorName   configured hardware name of the left shooter motor
-     * @param rightMotorName   configured hardware name of the right shooter motor
-     * @throws IllegalArgumentException if the motor cannot be found
+     * @param leftMotorName   configured hardware name of the left shooter motor (sl)
+     * @param rightMotorName  configured hardware name of the right shooter motor (sr)
+     * @throws IllegalArgumentException if the motors cannot be found
      */
     public Shooter(HardwareMap hardwareMap, String leftMotorName, String rightMotorName) {
         try {
-            this.leftShooterMotor = hardwareMap.get(DcMotorEx.class, leftMotorName);
-            this.rightShooterMotor = hardwareMap.get(DcMotorEx.class, rightMotorName);
+            this.sl = hardwareMap.get(DcMotorEx.class, leftMotorName);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Could not find shooter motors: " + leftMotorName + ", " + rightMotorName);
+            throw new IllegalArgumentException("Could not find left shooter motor: " + leftMotorName);
         }
 
-        // Default configuration for flywheel shooter
-        leftShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        leftShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        try {
+            this.sr = hardwareMap.get(DcMotorEx.class, rightMotorName);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Could not find right shooter motor: " + rightMotorName);
+        }
 
-        rightShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        // Configure left motor (clockwise)
+        sl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        sl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        sl.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        // Configure right motor (counterclockwise - reversed)
+        sr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        sr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        sr.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     /**
-     * Sets the shooter motor to a specific RPM using closed-loop
+     * Sets both shooter motors to a specific RPM using closed-loop
      * velocity control.
      *
      * @param rpm desired motor RPM
      */
     public void setRPM(double rpm) {
-        leftShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftShooterMotor.setVelocity(rpmToTicksPerSecond(rpm));
-
-        rightShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightShooterMotor.setVelocity(rpmToTicksPerSecond(rpm));
+        sl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        sr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        
+        double ticksPerSecond = rpmToTicksPerSecond(rpm);
+        sl.setVelocity(ticksPerSecond);
+        sr.setVelocity(ticksPerSecond);
+        
         targetRPM = rpm;
     }
 
     /**
-     * Sets the shooter motor to an open-loop power value.
+     * Sets both shooter motors to an open-loop power value.
      *
      * @param power motor power in the range [-1.0, 1.0]
      */
     public void setPower(double power) {
-        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftShooterMotor.setPower(power);
-
-        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightShooterMotor.setPower(power);
+        sl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        sr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        
+        sl.setPower(power);
+        sr.setPower(power);
+        
         // When in power mode targetRPM is no longer meaningful
         targetRPM = 0.0;
     }
 
     /**
-     * Stops the shooter motor.
+     * Stops both shooter motors.
      */
     public void stop() {
-        leftShooterMotor.setPower(0.0);
-        rightShooterMotor.setPower(0.0);
+        sl.setPower(0.0);
+        sr.setPower(0.0);
     }
 
     /**
-     * @return current shooter velocity in RPM
+     * @return current shooter velocity in RPM (average of both motors)
      */
     public double getCurrentRPM() {
-        double leftTicksPerSecond = leftShooterMotor.getVelocity();
-        double rightTicksPerSecond = rightShooterMotor.getVelocity();
-        return (ticksPerSecondToRPM(leftTicksPerSecond) + ticksPerSecondToRPM(rightTicksPerSecond)) / 2.0;
+        double leftTicksPerSecond = sl.getVelocity();
+        double rightTicksPerSecond = sr.getVelocity();
+        
+        double leftRPM = ticksPerSecondToRPM(leftTicksPerSecond);
+        double rightRPM = ticksPerSecondToRPM(rightTicksPerSecond);
+        
+        // Return average RPM
+        return (leftRPM + rightRPM) / 2.0;
+    }
+
+    /**
+     * @return current left motor velocity in RPM
+     */
+    public double getLeftRPM() {
+        return ticksPerSecondToRPM(sl.getVelocity());
+    }
+
+    /**
+     * @return current right motor velocity in RPM
+     */
+    public double getRightRPM() {
+        return ticksPerSecondToRPM(sr.getVelocity());
     }
 
     /**
@@ -139,13 +168,32 @@ public class Shooter {
     }
 
     /**
-     * Gives direct access to the underlying motor if needed
+     * Gives direct access to the left motor if needed
      * for advanced control or tuning.
      *
-     * @return DcMotorEx shooter motor
+     * @return DcMotorEx left shooter motor
      */
+    public DcMotorEx getLeftMotor() {
+        return sl;
+    }
+
+    /**
+     * Gives direct access to the right motor if needed
+     * for advanced control or tuning.
+     *
+     * @return DcMotorEx right shooter motor
+     */
+    public DcMotorEx getRightMotor() {
+        return sr;
+    }
+
+    /**
+     * Gets the left motor for backward compatibility.
+     * @deprecated Use getLeftMotor() instead
+     */
+    @Deprecated
     public DcMotorEx getMotor() {
-        return leftShooterMotor; // Return left motor for backward compatibility
+        return sl;
     }
 
     /**

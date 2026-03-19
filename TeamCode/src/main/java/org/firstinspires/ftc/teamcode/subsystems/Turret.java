@@ -28,6 +28,12 @@ public class Turret {
      */
     public static final double TICKS_PER_REV = 1536.0;
 
+    // Maximum rotation limits in degrees
+    private static final double MAX_ROTATION_DEGREES = 135.0;
+
+    // Conversion factor: degrees to encoder ticks
+    private static final double TICKS_PER_DEGREE = TICKS_PER_REV / 360.0;
+
     /**
      * Constructs a Turret with the default motor name.
      *
@@ -96,8 +102,27 @@ public class Turret {
      */
     public void setPower(double power) {
         double clampedPower = clampPower(power);
-        // Invert power: gear reverses direction (motor CW → turret CCW)
-        turretMotor.setPower(-clampedPower);
+
+        // Calculate current position in degrees
+        double currentPositionTicks = turretMotor.getCurrentPosition();
+        double currentPositionDegrees = currentPositionTicks / TICKS_PER_DEGREE;
+
+        // Determine the new position based on power
+        double newPositionDegrees = currentPositionDegrees + clampedPower;
+
+        // Wrap around logic
+        if (newPositionDegrees > MAX_ROTATION_DEGREES) {
+            newPositionDegrees = MAX_ROTATION_DEGREES;
+        } else if (newPositionDegrees < -MAX_ROTATION_DEGREES) {
+            newPositionDegrees = -MAX_ROTATION_DEGREES;
+        }
+
+        // Convert degrees back to ticks and set motor power
+        double newPositionTicks = newPositionDegrees * TICKS_PER_DEGREE;
+        turretMotor.setTargetPosition((int) newPositionTicks);
+        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretMotor.setPower(clampedPower);
+
         currentPower = clampedPower;
     }
 
