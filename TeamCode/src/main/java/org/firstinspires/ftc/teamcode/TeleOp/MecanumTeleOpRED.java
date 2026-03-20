@@ -135,27 +135,28 @@ public class MecanumTeleOpRED extends LinearOpMode {
                 targeting.aimAtRedBasket();
             }
             
-            // Shooting - opens indexer to allow balls through
-            if (gamepad1.right_trigger > 0.5) {
-                shooter.shootAtRedBasket();
-                indexer.open();
-                // Feed balls with intake/transfer when shooting
-                intake.transfer(INTAKE_POWER);
-            } else {
-                shooter.stopShooter();
-                intake.stop();
-                indexer.close();
-            }
+//            // Shooting - opens indexer to allow balls through
+//            if (gamepad1.right_trigger > 0.5) {
+//                shooter.shootAtRedBasket();
+//                indexer.open();
+//                // Feed balls with intake/transfer when shooting
+//                intake.transfer(INTAKE_POWER);
+//            } else {
+//                shooter.stopShooter();
+//                indexer.close();
+//            }
             
             // Intake control with square button
             if (gamepad1.square) {
                 intake.intake(INTAKE_POWER);
                 indexer.open();
-            } else if (gamepad1.right_trigger <= 0.5) {
-                // Only stop intake if not shooting
+            } else if (gamepad1.cross) {
+                intake.intake(-INTAKE_POWER);
+                indexer.open();
+            } else {
                 intake.stop();
             }
-            
+
             // Update subsystems
             shooter.update();
             targeting.update();

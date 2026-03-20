@@ -102,26 +102,9 @@ public class Turret {
      */
     public void setPower(double power) {
         double clampedPower = clampPower(power);
-
-        // Calculate current position in degrees
-        double currentPositionTicks = turretMotor.getCurrentPosition();
-        double currentPositionDegrees = currentPositionTicks / TICKS_PER_DEGREE;
-
-        // Determine the new position based on power
-        double newPositionDegrees = currentPositionDegrees + clampedPower;
-
-        // Wrap around logic
-        if (newPositionDegrees > MAX_ROTATION_DEGREES) {
-            newPositionDegrees = MAX_ROTATION_DEGREES;
-        } else if (newPositionDegrees < -MAX_ROTATION_DEGREES) {
-            newPositionDegrees = -MAX_ROTATION_DEGREES;
-        }
-
-        // Convert degrees back to ticks and set motor power
-        double newPositionTicks = newPositionDegrees * TICKS_PER_DEGREE;
-        turretMotor.setTargetPosition((int) newPositionTicks);
-        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        turretMotor.setPower(clampedPower);
+        
+        // Invert power due to gear ratio (motor CW -> turret CCW)
+        turretMotor.setPower(-clampedPower);
 
         currentPower = clampedPower;
     }

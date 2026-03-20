@@ -23,7 +23,11 @@ public class Constants {
                     0.0001,
                     0.032,
                     0.005))
-            .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.1, 0));
+            .headingPIDFCoefficients(new PIDFCoefficients(
+                    2,
+                    0,
+                    0.1,
+                    0));
     public static PathConstraints pathConstraints = new PathConstraints(0.85, 80, 0.8, 0.8);  // Reduced speeds for belt protection
 
     public static Follower createFollower(HardwareMap hardwareMap) {

@@ -152,8 +152,10 @@ public class MecanumTeleOpBLUE extends LinearOpMode {
             if (gamepad1.square) {
                 intake.intake(INTAKE_POWER);
                 indexer.open();
-            } else if (gamepad1.right_trigger <= 0.5) {
-                // Only stop intake if not shooting
+            } else if (gamepad1.cross) {
+                intake.intake(-INTAKE_POWER);
+                indexer.open();
+            } else {
                 intake.stop();
             }
             

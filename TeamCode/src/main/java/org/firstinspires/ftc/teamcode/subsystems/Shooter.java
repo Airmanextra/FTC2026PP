@@ -71,7 +71,7 @@ public class Shooter {
         // Configure left motor (clockwise)
         sl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        sl.setDirection(DcMotorSimple.Direction.FORWARD);
+        sl.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Configure right motor (counterclockwise - reversed)
         sr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
